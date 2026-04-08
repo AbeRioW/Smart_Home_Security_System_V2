@@ -25,9 +25,12 @@ smart_home_security_system\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx
 smart_home_security_system\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash.h
 smart_home_security_system\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash_ex.h
 smart_home_security_system\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h
+smart_home_security_system\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h
+smart_home_security_system\main.o: ../Core/Inc/usart.h
 smart_home_security_system\main.o: ../Core/Inc/gpio.h
 smart_home_security_system\main.o: ../App/oled.h
 smart_home_security_system\main.o: ../App/dht11.h
 smart_home_security_system\main.o: D:\Program Files\KEIL5\ARM\ARMCC\Bin\..\include\stdio.h
 smart_home_security_system\main.o: D:\Program Files\KEIL5\ARM\ARMCC\Bin\..\include\stdbool.h
 smart_home_security_system\main.o: ../App/ui.h
+smart_home_security_system\main.o: ../App/co2.h

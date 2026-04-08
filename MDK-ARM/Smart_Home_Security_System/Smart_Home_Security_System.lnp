@@ -2,9 +2,11 @@
 "smart_home_security_system\startup_stm32f103xb.o"
 "smart_home_security_system\main.o"
 "smart_home_security_system\gpio.o"
+"smart_home_security_system\usart.o"
 "smart_home_security_system\stm32f1xx_it.o"
 "smart_home_security_system\stm32f1xx_hal_msp.o"
 "smart_home_security_system\stm32f1xx_hal_gpio_ex.o"
+"smart_home_security_system\stm32f1xx_hal_uart.o"
 "smart_home_security_system\stm32f1xx_hal.o"
 "smart_home_security_system\stm32f1xx_hal_rcc.o"
 "smart_home_security_system\stm32f1xx_hal_rcc_ex.o"
@@ -19,6 +21,7 @@
 "smart_home_security_system\oled.o"
 "smart_home_security_system\dht11.o"
 "smart_home_security_system\ui.o"
+"smart_home_security_system\co2.o"
 --strict --scatter "Smart_Home_Security_System\Smart_Home_Security_System.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers
