@@ -3,6 +3,7 @@
 
 #include "dht11.h"
 #include "oled.h"
+#include "adc.h"
 #include <stdio.h>
 
 

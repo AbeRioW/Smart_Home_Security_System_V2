@@ -24,6 +24,8 @@ smart_home_security_system\ui.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_h
 smart_home_security_system\ui.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_dma.h
 smart_home_security_system\ui.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_dma_ex.h
 smart_home_security_system\ui.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_cortex.h
+smart_home_security_system\ui.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h
+smart_home_security_system\ui.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc_ex.h
 smart_home_security_system\ui.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash.h
 smart_home_security_system\ui.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash_ex.h
 smart_home_security_system\ui.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h
@@ -32,4 +34,5 @@ smart_home_security_system\ui.o: ../Core/Inc/gpio.h
 smart_home_security_system\ui.o: D:\Program Files\KEIL5\ARM\ARMCC\Bin\..\include\stdio.h
 smart_home_security_system\ui.o: D:\Program Files\KEIL5\ARM\ARMCC\Bin\..\include\stdbool.h
 smart_home_security_system\ui.o: ..\App\oled.h
+smart_home_security_system\ui.o: ../Core/Inc/adc.h
 smart_home_security_system\ui.o: ..\App\co2.h

@@ -4,7 +4,7 @@
 void main_ui(void)
 {
 	  DHT11_Data_t dht_data;
-    char display_buf[32],display_buf1[32], display_buf2[32];
+    char display_buf[32],display_buf1[32], display_buf2[32], display_buf3[32];
     
     if(DHT11_READ_DATA(&dht_data) == 0)
     {
@@ -19,5 +19,11 @@ void main_ui(void)
     float co2_val = CO2_GetConcentration();
     sprintf((char*)display_buf2, "CO2: %.3f mg/m3", co2_val);
     OLED_ShowString(0, 16, (uint8_t*)display_buf2, 8, 1);
+    
+    // 显示MQ5数值
+    uint32_t mq5_value = ADC1_ReadValue();
+    sprintf((char*)display_buf3, "MQ5: %u", (unsigned int)mq5_value);
+    OLED_ShowString(0, 24, (uint8_t*)display_buf3, 8, 1);
+    
     OLED_Refresh();
 }
