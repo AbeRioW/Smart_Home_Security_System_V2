@@ -427,7 +427,7 @@ bool ESP8266_ConnectCloud(void)
     OLED_Clear();
     return true;
 }
-#if 0
+
 /**
  * 订阅 MQTT 主题
  * topic: 主题字符串，不带引号
@@ -437,39 +437,57 @@ bool ESP8266_MQTT_Subscribe(const char *topic, uint8_t qos)
 {
     char cmd[256];
     snprintf(cmd, sizeof(cmd), "AT+MQTTSUB=0,\"%s\",%d\r\n", topic, qos);
-
-    HAL_UART_Transmit(&huart2, (uint8_t*)"--SEND CMD: ", 11, 100);
-    HAL_UART_Transmit(&huart2, (uint8_t*)cmd, strlen(cmd), 500);
-    HAL_UART_Transmit(&huart2, (uint8_t*)"\r\n", 2, 100);
     
-    HAL_UART_Transmit(&huart2, (uint8_t*)"Subscribing to topic...\r\n", 26, 100);
+    // 显示订阅状态
+    OLED_ShowString(0, 0,(uint8_t*)"Subscribing...", 8, 1);
+    char topic_str[64];
+    snprintf((char*)topic_str, sizeof(topic_str), "Topic: %s", topic);
+    OLED_ShowString(0, 8, (uint8_t*)topic_str, 8, 1);
+    char qos_str[32];
+    snprintf((char*)qos_str, sizeof(qos_str), "QoS: %d", qos);
+    OLED_ShowString(0, 16, (uint8_t*)qos_str, 8, 1);
+    OLED_Refresh();
     
     bool sub_result = ESP8266_SendCmd(cmd, "OK");
     
     if (sub_result)
     {
-        HAL_UART_Transmit(&huart2, (uint8_t*)"MQTT subscribe SUCCESS\r\n", 25, 100);
+        OLED_ShowString(0, 24,(uint8_t*)"Subscribe OK", 8, 1);
+        OLED_Refresh();
+        HAL_Delay(1000);
+        OLED_Clear();
         return true;
     }
     else
     {
-        HAL_UART_Transmit(&huart2, (uint8_t*)"MQTT subscribe FAILED, retrying...\r\n", 36, 100);
-        delay_ms(200);
+        OLED_ShowString(0, 24,(uint8_t*)"Subscribe failed", 8, 1);
+        OLED_ShowString(0, 32,(uint8_t*)"Retrying...", 8, 1);
+        OLED_Refresh();
+        HAL_Delay(200);
         
         sub_result = ESP8266_SendCmd(cmd, "OK");
         
         if (sub_result)
         {
-            HAL_UART_Transmit(&huart2, (uint8_t*)"MQTT subscribe SUCCESS (retry)\r\n", 33, 100);
+            OLED_ShowString(0, 24,(uint8_t*)"Subscribe OK", 8, 1);
+            OLED_ShowString(0, 32,(uint8_t*)"Retry success", 8, 1);
+            OLED_Refresh();
+            HAL_Delay(1000);
+            OLED_Clear();
             return true;
         }
         else
         {
-            HAL_UART_Transmit(&huart2, (uint8_t*)"MQTT subscribe FAILED after retry\r\n", 36, 100);
+            OLED_ShowString(0, 24,(uint8_t*)"Subscribe failed", 8, 1);
+            OLED_ShowString(0, 32,(uint8_t*)"Retry failed", 8, 1);
+            OLED_Refresh();
+            HAL_Delay(1000);
+            OLED_Clear();
             return false;
         }
     }
 }
+
 
 /**
  * 发布 MQTT 消息
@@ -490,10 +508,15 @@ bool ESP8266_MQTT_Publish(const char *topic, const char *payload, uint8_t qos, u
     snprintf(cmd, sizeof(cmd), "AT+MQTTPUB=0,\"%s\",\"%s\",%d,%d\r\n", 
              topic, payload, qos, retain);
 
-    // 调试打印发送的命令
-    HAL_UART_Transmit(&huart2, (uint8_t*)"--SEND CMD:", 11, 100);
-    HAL_UART_Transmit(&huart2, (uint8_t*)cmd, strlen(cmd), 500);
-    HAL_UART_Transmit(&huart2, (uint8_t*)"\r\n", 2, 100);
+    // 显示发布状态
+    OLED_ShowString(0, 0,(uint8_t*)"Publishing...", 8, 1);
+    char topic_str[64];
+    snprintf((char*)topic_str, sizeof(topic_str), "Topic: %s", topic);
+    OLED_ShowString(0, 8, (uint8_t*)topic_str, 8, 1);
+    char qos_str[32];
+    snprintf((char*)qos_str, sizeof(qos_str), "QoS: %d, Retain: %d", qos, retain);
+    OLED_ShowString(0, 16, (uint8_t*)qos_str, 8, 1);
+    OLED_Refresh();
 
     // 清空接收缓存并发送命令
     ESP8266_Clear();
@@ -513,22 +536,32 @@ bool ESP8266_MQTT_Publish(const char *topic, const char *payload, uint8_t qos, u
             check_buf[len] = '\0';
             if (strstr(check_buf, "OK") != NULL) 
             {
+                OLED_ShowString(0, 24,(uint8_t*)"Publish OK", 8, 1);
+                OLED_Refresh();
+                HAL_Delay(500);
+                OLED_Clear();
                 return true;
             }
             if (strstr(check_buf, "ERROR") != NULL)
             {
-                HAL_UART_Transmit(&huart2, (uint8_t*)"--ESP publish ERROR\r\n", 22, 100);
+                OLED_ShowString(0, 24,(uint8_t*)"Publish failed", 8, 1);
+                OLED_Refresh();
+                HAL_Delay(500);
+                OLED_Clear();
                 return false;
             }
         }
         // 短暂延时让出CPU，不阻塞其他任务
-        delay_ms(1);
+        HAL_Delay(1);
     }
     
-    HAL_UART_Transmit(&huart2, (uint8_t*)"--ESP publish timeout\r\n", 23, 100);
+    OLED_ShowString(0, 24,(uint8_t*)"Publish timeout", 8, 1);
+    OLED_Refresh();
+    HAL_Delay(500);
+    OLED_Clear();
     return false;
 }
-
+#if 0
 /**
  * 检查接收缓冲区，寻找订阅主题的下发消息并解析 JSON 控制 LED
  * 说明：主循环中定期调用该函数（避免在中断中做复杂解析）

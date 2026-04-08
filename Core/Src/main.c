@@ -122,6 +122,18 @@ int main(void)
 	ESP8266_Clear();
 	OLED_Clear();
 	
+	//¶©ÔÄ
+	if(!ESP8266_MQTT_Subscribe(MQTT_TOPIC_POST_REPLY,1))
+	{
+		  while(1);
+	}
+	
+	//·¢²¼
+		if(!ESP8266_MQTT_Subscribe(MQTT_TOPIC_SET,0))
+	{
+		  while(1);
+	}
+	
   /* USER CODE END 2 */
 
   /* Infinite loop */
