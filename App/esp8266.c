@@ -77,7 +77,7 @@ bool ESP8266_WaitRecive(void)
 */
 bool ESP8266_SendCmd(const char *cmd, const char *expected_resp)
 {
-  uint16_t timeOut = 3000; // 原 200 -> 3000 (约30s)
+  uint16_t timeOut = 60000; // 增加到60秒，以处理MQTT连接的延迟
 
     // 清空接收缓冲区
     ESP8266_Clear();
@@ -91,9 +91,10 @@ bool ESP8266_SendCmd(const char *cmd, const char *expected_resp)
     // 等待响应
     while(timeOut--)
     {
-        if(ESP8266_WaitRecive() == REV_OK)
+        // 直接检查缓冲区，不依赖ESP8266_WaitRecive，避免错过+MQTTCONNECTED响应
+        if(esp8266_cnt > 0)
         {
-            // 等待更多字节到达，避免分片丢失（可根据需要增大）
+            // 等待更多字节到达，避免分片丢失
             HAL_Delay(200);
 
             // 拷贝缓冲到本地（用 esp8266_cnt 快照）
@@ -103,7 +104,6 @@ bool ESP8266_SendCmd(const char *cmd, const char *expected_resp)
             memcpy(local_buf, (const char*)esp8266_buf, len);
             local_buf[len] = '\0';
 
-
             // 如果包含期望响应，返回成功
             if(expected_resp && strstr(local_buf, expected_resp) != NULL)
             {
@@ -111,26 +111,19 @@ bool ESP8266_SendCmd(const char *cmd, const char *expected_resp)
                 return true;
             }
 
-            // 如果包含 ERROR，立即返回失败（并打印）
-            if(strstr(local_buf, "ERROR") != NULL)
-            {
-                ESP8266_Clear();
-                return false;
-            }
-
-            // 否则继续等待（可能是回显或其它异步信息）
+            // 清空缓冲区，避免数据积累
+            ESP8266_Clear();
         }
         HAL_Delay(10);
     }
 
-      // 超时，拷贝并打印一次缓冲以便排查
+    // 超时，拷贝并打印一次缓冲以便排查
     {
         char dump_buf[ESP8266_BUF_SIZE];
         uint16_t dump_len = esp8266_cnt;
         if (dump_len > ESP8266_BUF_SIZE - 1) dump_len = ESP8266_BUF_SIZE - 1;
         memcpy(dump_buf, (const char*)esp8266_buf, dump_len);
         dump_buf[dump_len] = '\0';
-
     }
 
     ESP8266_Clear();
@@ -255,7 +248,7 @@ bool ESP8266_ConnectWiFi(void)
 }
 
 
-#if 0
+
 /**
  *	函数名称：	ESP8266_ConnectCloud
  *	函数功能：	连接OneNET云平台(MQTT)
@@ -264,12 +257,12 @@ bool ESP8266_ConnectWiFi(void)
 bool ESP8266_ConnectCloud(void)
 {
     // 先断开之前的MQTT连接（如果有）
-    ESP8266_SendCmd("AT+MQTTDISCONN=0\r\n", "OK");
-    delay_ms(500);
+//    ESP8266_SendCmd("AT+MQTTDISCONN=0\r\n", "OK");
+//    HAL_Delay(500);
     
     // 清除之前的MQTT配置
-    ESP8266_SendCmd("AT+MQTTUSERCFG=0,0,\"\",\"\",\"\",0,0,\"\"\r\n", "OK");
-    delay_ms(500);
+//    ESP8266_SendCmd("AT+MQTTUSERCFG=0,0,\"\",\"\",\"\",0,0,\"\"\r\n", "OK");
+//    HAL_Delay(500);
     
     char mqtt_user_cfg[512];
     snprintf(mqtt_user_cfg, sizeof(mqtt_user_cfg), 
@@ -278,7 +271,8 @@ bool ESP8266_ConnectCloud(void)
 
     const char *mqtt_conn = "AT+MQTTCONN=0,\"mqtts.heclouds.com\",1883,1\r\n";
     
-    HAL_UART_Transmit(&huart2, (uint8_t*)"Configuring MQTT...\r\n", 22, 100);
+    OLED_ShowString(0, 0,(uint8_t*)"Connecting Cloud...", 8, 1);
+    OLED_Refresh();
     
     // 配置MQTT用户信息，最多尝试5次
     int mqtt_user_cfg_try = 0;
@@ -287,24 +281,24 @@ bool ESP8266_ConnectCloud(void)
     
     while (mqtt_user_cfg_try < 10 && !mqtt_user_cfg_success)
     {
-        HAL_UART_Transmit(&huart2, (uint8_t*)"Trying MQTT USERCFG...\r\n", 24, 100);
         
-        // 打印即将发送的完整命令用于调试
-        HAL_UART_Transmit(&huart2, (uint8_t*)"--SEND CMD: ", 11, 100);
-        HAL_UART_Transmit(&huart2, (uint8_t*)mqtt_user_cfg, strlen(mqtt_user_cfg), 1000);
-        HAL_UART_Transmit(&huart2, (uint8_t*)"\r\n", 2, 100);
+        // 显示尝试次数
+        char try_str[32];
+        snprintf((char*)try_str, sizeof(try_str), "Try: %d/10", mqtt_user_cfg_try + 1);
+        OLED_ShowString(0, 8, (uint8_t*)try_str, 8, 1);
+        OLED_Refresh();
         
         // 清空接收缓冲区
         ESP8266_Clear();
         
         // 等待ESP8266空闲
-        delay_ms(1000);
+        HAL_Delay(1000);
         
         // 发送长命令，增加超时时间到 5000ms
         HAL_UART_Transmit(&huart1, (uint8_t *)mqtt_user_cfg, strlen(mqtt_user_cfg), 5000);
         
         // 给ESP8266更多时间处理长命令
-        delay_ms(1500);
+        HAL_Delay(1500);
         
         // 等待响应，增加超时时间
         uint16_t timeOut = 10000; // 增加到10秒
@@ -315,30 +309,18 @@ bool ESP8266_ConnectCloud(void)
             if(esp8266_cnt > 0) // 只要有数据就检查
             {
                 // 等待更多字节到达
-                delay_ms(300);
+                HAL_Delay(300);
                 
                 char local_buf[ESP8266_BUF_SIZE];
                 uint16_t len = esp8266_cnt;
                 if (len > ESP8266_BUF_SIZE - 1) len = ESP8266_BUF_SIZE - 1;
                 memcpy(local_buf, (const char*)esp8266_buf, len);
                 local_buf[len] = '\0';
-                HAL_UART_Transmit(&huart2, (uint8_t*)"--ESP RX: ", 10, 100);
-                if (len) HAL_UART_Transmit(&huart2, (uint8_t*)local_buf, strlen(local_buf), 500);
-                HAL_UART_Transmit(&huart2, (uint8_t*)"\r\n", 2, 100);
                 
                 if(strstr(local_buf, "OK") != NULL)
                 {
                     got_response = true;
                     mqtt_user_cfg_success = true;
-                    ESP8266_Clear();
-                    break;
-                }
-                
-                if(strstr(local_buf, "+MQTTCONNECTED") != NULL)
-                {
-                    got_response = true;
-                    mqtt_user_cfg_success = true;
-                    auto_connected = true;  // 标记为自动连接
                     ESP8266_Clear();
                     break;
                 }
@@ -353,53 +335,99 @@ bool ESP8266_ConnectCloud(void)
                 // 清空缓冲区，避免死循环打印
                 ESP8266_Clear();
             }
-            delay_ms(10);
+            HAL_Delay(10);
         }
         
         if(mqtt_user_cfg_success)
         {
-            HAL_UART_Transmit(&huart2, (uint8_t*)"MQTT USERCFG OK\r\n", 18, 100);
             if(auto_connected)
             {
-                HAL_UART_Transmit(&huart2, (uint8_t*)"MQTT auto-connected OK\r\n", 25, 100);
+                OLED_ShowString(0, 16,(uint8_t*)"Auto connected", 8, 1);
+                OLED_Refresh();
+            }
+            else
+            {
+                OLED_ShowString(0, 16,(uint8_t*)"User cfg OK", 8, 1);
+                OLED_Refresh();
             }
         }
         else
         {
+            OLED_ShowString(0, 16,(uint8_t*)"User cfg failed", 8, 1);
+            OLED_Refresh();
             mqtt_user_cfg_try++;
-            HAL_UART_Transmit(&huart2, (uint8_t*)"MQTT USERCFG failed, retrying...\r\n", 33, 100);
-            delay_ms(3000); // 等待3秒后重试
+            HAL_Delay(3000); // 等待3秒后重试
         }
     }
+		//User cfg
     
     if(!mqtt_user_cfg_success)
     {
-        HAL_UART_Transmit(&huart2, (uint8_t*)"MQTT USERCFG failed after 10 attempts\r\n", 37, 100);
+        OLED_ShowString(0, 24,(uint8_t*)"Cloud connect failed", 8, 1);
+        OLED_Refresh();
+        HAL_Delay(1000);
+        OLED_Clear();
         return false;
     }
     
     // 如果没有自动连接，则手动发送连接命令
     if(!auto_connected)
     {
-        HAL_UART_Transmit(&huart2, (uint8_t*)"Connecting MQTT...\r\n", 20, 100);
+        OLED_ShowString(0, 24,(uint8_t*)"Connecting MQTT...", 8, 1);
+        OLED_Refresh();
         
-        // 连接MQTT服务器
-        if(ESP8266_SendCmd(mqtt_conn, "+MQTTCONNECTED"))
+        // 连接MQTT服务器，最多尝试5次
+        int mqtt_conn_try = 0;
+        bool mqtt_conn_success = false;
+        
+        while (mqtt_conn_try < 5 && !mqtt_conn_success)
         {
-            HAL_UART_Transmit(&huart2, (uint8_t*)"MQTT connected OK\r\n", 20, 100);
-            return true;
+            // 显示连接尝试次数
+            char conn_try_str[32];
+            snprintf((char*)conn_try_str, sizeof(conn_try_str), "Conn Try: %d/5", mqtt_conn_try + 1);
+            OLED_ShowString(0, 32, (uint8_t*)conn_try_str, 8, 1);
+            OLED_Refresh();
+            
+            // 连接MQTT服务器，期望收到+MQTTCONNECTED响应
+					#if 1
+					 HAL_UART_Transmit(&huart1, (uint8_t *)mqtt_conn, strlen(mqtt_conn), 5000);
+					  return true;
+					#else
+//            if(ESP8266_SendCmd(mqtt_conn, "+MQTTCONNECTED"))
+//            {
+//                mqtt_conn_success = true;
+//                OLED_ShowString(0, 32,(uint8_t*)"Cloud connected", 8, 1);
+//                OLED_Refresh();
+//                HAL_Delay(1000);
+//                OLED_Clear();
+//                return true;
+//            }
+//            else
+//            {
+//                OLED_ShowString(0, 32,(uint8_t*)"MQTT connect failed", 8, 1);
+//                OLED_Refresh();
+//                mqtt_conn_try++;
+//                HAL_Delay(3000); // 等待3秒后重试
+//            }
+#endif
         }
-        else
-        {
-            HAL_UART_Transmit(&huart2, (uint8_t*)"MQTT connect failed\r\n", 22, 100);
-            return false;
-        }
+        
+        // 多次尝试后仍然失败
+        OLED_ShowString(0, 32,(uint8_t*)"MQTT connect failed", 8, 1);
+        OLED_Refresh();
+        HAL_Delay(1000);
+        OLED_Clear();
+        return false;
     }
     
     // 已经自动连接成功
+    OLED_ShowString(0, 32,(uint8_t*)"Cloud connected", 8, 1);
+    OLED_Refresh();
+    HAL_Delay(1000);
+    OLED_Clear();
     return true;
 }
-
+#if 0
 /**
  * 订阅 MQTT 主题
  * topic: 主题字符串，不带引号

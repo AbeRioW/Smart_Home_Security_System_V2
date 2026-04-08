@@ -112,6 +112,16 @@ int main(void)
       wifi_try++;
       HAL_Delay(1000);
   }
+	
+	  //иотф
+	if(ESP8266_ConnectCloud()==false)
+	{
+		  while(1);
+	}
+	HAL_Delay(5000);
+	ESP8266_Clear();
+	OLED_Clear();
+	
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -129,7 +139,7 @@ int main(void)
         setting_ui();
     }
     
-    HAL_Delay(200);
+    HAL_Delay(1000);
   }
   /* USER CODE END 3 */
 }
