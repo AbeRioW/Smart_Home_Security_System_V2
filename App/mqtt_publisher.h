@@ -36,5 +36,8 @@ void MQTT_Publish_card2(const char* value);
 
 // 发布time_set标识符
 void MQTT_Publish_time_set(const char* value);
+void MQTT_Publish_temp(const char* value);
+void MQTT_Publish_humidity(const char* value);
+void MQTT_Publish_co2(const char* value);
 
 #endif

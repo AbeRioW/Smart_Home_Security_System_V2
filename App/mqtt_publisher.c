@@ -27,46 +27,15 @@ void MQTT_Publish_Data(const char* key, const char* value)
                      "{\\\"id\\\":\\\"%lu\\\"\\,\\\"params\\\":{\\\"%s\\\":{\\\"value\\\":%s}}}",
                      (unsigned long)msg_id, key, value);
 
-    // 调试打印 payload
-//    HAL_UART_Transmit(&huart2, (uint8_t*)"--PAYLOAD:", 10, 300);
-//    if (n > 0) HAL_UART_Transmit(&huart2, (uint8_t*)payload, strlen(payload), 500);
-//    HAL_UART_Transmit(&huart2, (uint8_t*)"\r\n", 2, 100);
     
     if (n > 0 && n < (int)sizeof(payload))
     {
-        // 显示发布状态
-//        char pub_str[32];
-//        snprintf((char*)pub_str, sizeof(pub_str), "Publishing: %s", key);
-//        OLED_ShowString(0, 0, (uint8_t*)pub_str, 8, 1);
-//        OLED_Refresh();
-        
-        // 尝试发布，只尝试一次，不重试避免阻塞
+
         if (ESP8266_MQTT_Publish(MQTT_TOPIC_POST, payload, 0, 0))
         {
-//            HAL_UART_Transmit(&huart2, (uint8_t*)"Publish OK\r\n", 12, 100);
-//            OLED_ShowString(0, 8, (uint8_t*)"Publish OK", 8, 1);
-//            OLED_Refresh();
+
             msg_id++;
         }
-        else
-        {
-//            HAL_UART_Transmit(&huart2, (uint8_t*)"Publish failed\r\n", 16, 100);
-//            OLED_ShowString(0, 8, (uint8_t*)"Publish failed", 8, 1);
-//            OLED_Refresh();
-            // 不重试，避免阻塞主循环，下次再试
-        }
-        
-        // 短暂显示后清除
-        HAL_Delay(500);
-        OLED_Clear();
-    }
-    else
-    {
-//        HAL_UART_Transmit(&huart2, (uint8_t*)"Payload build error\r\n", 21, 100);
-//        OLED_ShowString(0, 0, (uint8_t*)"Payload error", 8, 1);
-//        OLED_Refresh();
-        HAL_Delay(500);
-        OLED_Clear();
     }
 }
 
@@ -105,3 +74,22 @@ void MQTT_Publish_time_set(const char* value)
 {
     MQTT_Publish_Data("time_set", value);
 }
+
+// 发布time_set标识符
+void MQTT_Publish_temp(const char* value)
+{
+    MQTT_Publish_Data("temperature", value);
+}
+
+// 发布time_set标识符
+void MQTT_Publish_humidity(const char* value)
+{
+    MQTT_Publish_Data("humidity", value);
+}
+
+void MQTT_Publish_co2(const char* value)
+{
+    MQTT_Publish_Data("CO2", value);
+}
+
+

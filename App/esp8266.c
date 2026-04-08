@@ -509,14 +509,14 @@ bool ESP8266_MQTT_Publish(const char *topic, const char *payload, uint8_t qos, u
              topic, payload, qos, retain);
 
     // 显示发布状态
-    OLED_ShowString(0, 0,(uint8_t*)"Publishing...", 8, 1);
-    char topic_str[64];
-    snprintf((char*)topic_str, sizeof(topic_str), "Topic: %s", topic);
-    OLED_ShowString(0, 8, (uint8_t*)topic_str, 8, 1);
-    char qos_str[32];
-    snprintf((char*)qos_str, sizeof(qos_str), "QoS: %d, Retain: %d", qos, retain);
-    OLED_ShowString(0, 16, (uint8_t*)qos_str, 8, 1);
-    OLED_Refresh();
+//    OLED_ShowString(0, 0,(uint8_t*)"Publishing...", 8, 1);
+//    char topic_str[64];
+//    snprintf((char*)topic_str, sizeof(topic_str), "Topic: %s", topic);
+//    OLED_ShowString(0, 8, (uint8_t*)topic_str, 8, 1);
+//    char qos_str[32];
+//    snprintf((char*)qos_str, sizeof(qos_str), "QoS: %d, Retain: %d", qos, retain);
+//    OLED_ShowString(0, 16, (uint8_t*)qos_str, 8, 1);
+//    OLED_Refresh();
 
     // 清空接收缓存并发送命令
     ESP8266_Clear();
@@ -536,18 +536,18 @@ bool ESP8266_MQTT_Publish(const char *topic, const char *payload, uint8_t qos, u
             check_buf[len] = '\0';
             if (strstr(check_buf, "OK") != NULL) 
             {
-                OLED_ShowString(0, 24,(uint8_t*)"Publish OK", 8, 1);
-                OLED_Refresh();
-                HAL_Delay(500);
-                OLED_Clear();
+//                OLED_ShowString(0, 24,(uint8_t*)"Publish OK", 8, 1);
+//                OLED_Refresh();
+//                HAL_Delay(500);
+//                OLED_Clear();
                 return true;
             }
             if (strstr(check_buf, "ERROR") != NULL)
             {
-                OLED_ShowString(0, 24,(uint8_t*)"Publish failed", 8, 1);
-                OLED_Refresh();
-                HAL_Delay(500);
-                OLED_Clear();
+//                OLED_ShowString(0, 24,(uint8_t*)"Publish failed", 8, 1);
+//                OLED_Refresh();
+//                HAL_Delay(500);
+//                OLED_Clear();
                 return false;
             }
         }
@@ -555,10 +555,10 @@ bool ESP8266_MQTT_Publish(const char *topic, const char *payload, uint8_t qos, u
         HAL_Delay(1);
     }
     
-    OLED_ShowString(0, 24,(uint8_t*)"Publish timeout", 8, 1);
-    OLED_Refresh();
-    HAL_Delay(500);
-    OLED_Clear();
+//    OLED_ShowString(0, 24,(uint8_t*)"Publish timeout", 8, 1);
+//    OLED_Refresh();
+//    HAL_Delay(500);
+//    OLED_Clear();
     return false;
 }
 #if 0

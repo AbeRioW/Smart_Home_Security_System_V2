@@ -37,3 +37,4 @@ smart_home_security_system\ui.o: ..\App\oled.h
 smart_home_security_system\ui.o: ../Core/Inc/adc.h
 smart_home_security_system\ui.o: ..\App\co2.h
 smart_home_security_system\ui.o: ..\App\settings.h
+smart_home_security_system\ui.o: ..\App\mqtt_publisher.h

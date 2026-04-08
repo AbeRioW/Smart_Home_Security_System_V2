@@ -29,6 +29,7 @@
 "smart_home_security_system\settings.o"
 "smart_home_security_system\cjson.o"
 "smart_home_security_system\esp8266.o"
+"smart_home_security_system\mqtt_publisher.o"
 --strict --scatter "Smart_Home_Security_System\Smart_Home_Security_System.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers
