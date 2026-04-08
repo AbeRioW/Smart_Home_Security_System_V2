@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "adc.h"
+#include "dma.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -28,6 +29,7 @@
 #include "dht11.h"
 #include "ui.h"
 #include "co2.h"
+#include "settings.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -48,13 +50,15 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+volatile uint8_t key1_pressed = 0;
+volatile uint8_t key2_pressed = 0;
+volatile uint8_t key3_pressed = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-
+void Process_Key_Events(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -91,11 +95,14 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_USART2_UART_Init();
   MX_ADC1_Init();
+  MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
   OLED_Init();
   CO2_Init();
+  Settings_Init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -105,8 +112,15 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-   main_ui();
-    HAL_Delay(2000);
+    Process_Key_Events();
+    
+    if (SettingMode_Get() == SETTING_MODE_NORMAL) {
+        main_ui();
+    } else {
+        setting_ui();
+    }
+    
+    HAL_Delay(200);
   }
   /* USER CODE END 3 */
 }
@@ -158,7 +172,51 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+void Process_Key_Events(void)
+{
+    if (key1_pressed) {
+        key1_pressed = 0;
+        
+        if (SettingMode_Get() == SETTING_MODE_NORMAL) {
+            SettingMode_Set(SETTING_MODE_TEMP);
+            OLED_Clear();
+        } else if (SettingMode_Get() == SETTING_MODE_EXIT) {
+            Settings_Save();
+            SettingMode_Set(SETTING_MODE_NORMAL);
+            OLED_Clear();
+        } else {
+            SettingMode_Next();
+            OLED_Clear();
+        }
+    }
+    
+    if (key2_pressed) {
+        key2_pressed = 0;
+        
+        if (SettingMode_Get() != SETTING_MODE_NORMAL) {
+            SettingValue_Increase();
+        }
+    }
+    
+    if (key3_pressed) {
+        key3_pressed = 0;
+        
+        if (SettingMode_Get() != SETTING_MODE_NORMAL) {
+            SettingValue_Decrease();
+        }
+    }
+}
 
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+    if (GPIO_Pin == KEY1_Pin) {
+        key1_pressed = 1;
+    } else if (GPIO_Pin == KEY2_Pin) {
+        key2_pressed = 1;
+    } else if (GPIO_Pin == KEY3_Pin) {
+        key3_pressed = 1;
+    }
+}
 /* USER CODE END 4 */
 
 /**

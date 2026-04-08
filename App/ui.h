@@ -6,8 +6,7 @@
 #include "adc.h"
 #include <stdio.h>
 
-
-//函数原型
 void main_ui(void);
+void setting_ui(void);
 
-#endif /* UI_H */
+#endif
