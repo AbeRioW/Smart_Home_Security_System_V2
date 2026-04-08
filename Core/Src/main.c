@@ -30,6 +30,7 @@
 #include "ui.h"
 #include "co2.h"
 #include "settings.h"
+#include "esp8266.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -74,7 +75,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
+  uint8_t wifi_try = 0, mqtt_try = 0;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -103,6 +104,14 @@ int main(void)
   OLED_Init();
   CO2_Init();
   Settings_Init();
+	ESP8266_Init();
+	
+	  //WIFIÁ¬½Ó
+  while (wifi_try < 5 && !ESP8266_ConnectWiFi())
+  {
+      wifi_try++;
+      HAL_Delay(1000);
+  }
   /* USER CODE END 2 */
 
   /* Infinite loop */

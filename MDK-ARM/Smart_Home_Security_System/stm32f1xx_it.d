@@ -29,3 +29,7 @@ smart_home_security_system\stm32f1xx_it.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/s
 smart_home_security_system\stm32f1xx_it.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h
 smart_home_security_system\stm32f1xx_it.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h
 smart_home_security_system\stm32f1xx_it.o: ../Core/Inc/stm32f1xx_it.h
+smart_home_security_system\stm32f1xx_it.o: ../App/co2.h
+smart_home_security_system\stm32f1xx_it.o: ../App/esp8266.h
+smart_home_security_system\stm32f1xx_it.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+smart_home_security_system\stm32f1xx_it.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h

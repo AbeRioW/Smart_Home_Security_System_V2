@@ -48,20 +48,20 @@ float CO2_GetConcentration(void)
 }
 
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-{
-    if (huart == &huart2)
-    {
-        co2_rx_index++;
-        
-        if (co2_rx_index >= 9)
-        {
-            CO2_ProcessData();
-        }
-        else
-        {
-            
-            HAL_UART_Receive_IT(&huart2, &co2_rx_buffer[co2_rx_index], 1);
-        }
-    }
-}
+//void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+//{
+//    if (huart == &huart2)
+//    {
+//        co2_rx_index++;
+//        
+//        if (co2_rx_index >= 9)
+//        {
+//            CO2_ProcessData();
+//        }
+//        else
+//        {
+//            
+//            HAL_UART_Receive_IT(&huart2, &co2_rx_buffer[co2_rx_index], 1);
+//        }
+//    }
+//}

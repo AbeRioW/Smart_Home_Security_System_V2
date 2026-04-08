@@ -3,6 +3,7 @@
 "smart_home_security_system\main.o"
 "smart_home_security_system\gpio.o"
 "smart_home_security_system\adc.o"
+"smart_home_security_system\dma.o"
 "smart_home_security_system\usart.o"
 "smart_home_security_system\stm32f1xx_it.o"
 "smart_home_security_system\stm32f1xx_hal_msp.o"
@@ -26,6 +27,8 @@
 "smart_home_security_system\ui.o"
 "smart_home_security_system\co2.o"
 "smart_home_security_system\settings.o"
+"smart_home_security_system\cjson.o"
+"smart_home_security_system\esp8266.o"
 --strict --scatter "Smart_Home_Security_System\Smart_Home_Security_System.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

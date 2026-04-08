@@ -22,6 +22,8 @@
 #include "stm32f1xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "co2.h"
+#include "esp8266.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -235,7 +237,23 @@ void DMA1_Channel5_IRQHandler(void)
 void USART1_IRQHandler(void)
 {
   /* USER CODE BEGIN USART1_IRQn 0 */
+  if(__HAL_UART_GET_FLAG(&huart1, UART_FLAG_IDLE))
+  {
+      __HAL_UART_CLEAR_IDLEFLAG(&huart1);
 
+      // ? DMA ???????????
+      HAL_UART_DMAStop(&huart1);
+
+      // ?????????????????????? ESP8266_BUF_SIZE-1???????? Receive_DMA ??????????
+      uint16_t received = (uint16_t)((ESP8266_BUF_SIZE - 1) - __HAL_DMA_GET_COUNTER(huart1.hdmarx));
+      if (received > (ESP8266_BUF_SIZE - 1)) received = (ESP8266_BUF_SIZE - 1);
+
+      esp8266_cnt = received;
+      esp8266_buf[received] = '\0';
+
+      // ???????? DMA ???????
+      HAL_UART_Receive_DMA(&huart1, (uint8_t*)esp8266_buf, ESP8266_BUF_SIZE - 1);
+  }
   /* USER CODE END USART1_IRQn 0 */
   HAL_UART_IRQHandler(&huart1);
   /* USER CODE BEGIN USART1_IRQn 1 */
@@ -274,5 +292,33 @@ void EXTI15_10_IRQHandler(void)
 }
 
 /* USER CODE BEGIN 1 */
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+    if (huart == &huart2)
+    {
+        co2_rx_index++;
+        
+        if (co2_rx_index >= 9)
+        {
+            CO2_ProcessData();
+        }
+        else
+        {
+            
+            HAL_UART_Receive_IT(&huart2, &co2_rx_buffer[co2_rx_index], 1);
+        }
+    }
+		
+	    if (huart == &huart1)
+    {
+        // 计算实际接收到的字节数
+        esp8266_cnt = ESP8266_BUF_SIZE - 1 - huart->RxXferCount;
+        if (esp8266_cnt > 0) {
+            esp8266_buf[esp8266_cnt] = '\0';
+        }
+        // 重新启动 DMA 接收
+        HAL_UART_Receive_DMA(&huart1, (uint8_t*)esp8266_buf, ESP8266_BUF_SIZE - 1);
+    }
+}
 
 /* USER CODE END 1 */
