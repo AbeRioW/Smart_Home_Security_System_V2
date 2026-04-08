@@ -93,3 +93,9 @@ void MQTT_Publish_co2(const char* value)
 }
 
 
+void MQTT_Publish_mq5(const char* value)
+{
+    MQTT_Publish_Data("MQ5", value);
+}
+
+

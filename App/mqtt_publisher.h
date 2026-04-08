@@ -39,5 +39,6 @@ void MQTT_Publish_time_set(const char* value);
 void MQTT_Publish_temp(const char* value);
 void MQTT_Publish_humidity(const char* value);
 void MQTT_Publish_co2(const char* value);
+void MQTT_Publish_mq5(const char* value);
 
 #endif

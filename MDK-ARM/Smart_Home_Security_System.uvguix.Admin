@@ -1874,9 +1874,9 @@
       </Doc>
       <Doc>
         <Name>..\App\ui.c</Name>
-        <ColumnNumber>8</ColumnNumber>
+        <ColumnNumber>4</ColumnNumber>
         <TopLine>1</TopLine>
-        <CurrentLine>18</CurrentLine>
+        <CurrentLine>25</CurrentLine>
         <Folding>1</Folding>
         <ContractedFolders></ContractedFolders>
         <PaneID>0</PaneID>
@@ -1892,9 +1892,9 @@
       </Doc>
       <Doc>
         <Name>..\App\esp8266.c</Name>
-        <ColumnNumber>13</ColumnNumber>
+        <ColumnNumber>0</ColumnNumber>
         <TopLine>493</TopLine>
-        <CurrentLine>544</CurrentLine>
+        <CurrentLine>510</CurrentLine>
         <Folding>1</Folding>
         <ContractedFolders></ContractedFolders>
         <PaneID>0</PaneID>
@@ -1920,8 +1920,8 @@
       <Doc>
         <Name>..\App\mqtt_publisher.c</Name>
         <ColumnNumber>0</ColumnNumber>
-        <TopLine>3</TopLine>
-        <CurrentLine>16</CurrentLine>
+        <TopLine>60</TopLine>
+        <CurrentLine>96</CurrentLine>
         <Folding>1</Folding>
         <ContractedFolders></ContractedFolders>
         <PaneID>0</PaneID>
@@ -1973,9 +1973,9 @@
       </Doc>
       <Doc>
         <Name>..\App\mqtt_publisher.h</Name>
-        <ColumnNumber>21</ColumnNumber>
-        <TopLine>10</TopLine>
-        <CurrentLine>41</CurrentLine>
+        <ColumnNumber>41</ColumnNumber>
+        <TopLine>11</TopLine>
+        <CurrentLine>42</CurrentLine>
         <Folding>1</Folding>
         <ContractedFolders></ContractedFolders>
         <PaneID>0</PaneID>

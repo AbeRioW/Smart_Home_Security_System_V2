@@ -26,12 +26,17 @@ void main_ui(void)
     float co2_val = CO2_GetConcentration();
     sprintf((char*)display_buf2, "CO2: %.3f mg/m3", co2_val);
     OLED_ShowString(0, 16, (uint8_t*)display_buf2, 8, 1);
+    
+    sprintf(temp_buf, "21.1");
+    MQTT_Publish_co2(temp_buf);
 		
     uint32_t mq5_value = ADC1_ReadValue();
     sprintf((char*)display_buf3, "MQ5: %u", (unsigned int)mq5_value);
     OLED_ShowString(0, 24, (uint8_t*)display_buf3, 8, 1);
     
     OLED_Refresh();
+		sprintf(temp_buf, "%u", (unsigned int)mq5_value);
+    MQTT_Publish_mq5(temp_buf);
 }
 
 void setting_ui(void)
